@@ -1,0 +1,34 @@
+{{!-- parse profile --}}
+<script>
+	`{{profile}}`
+	const profile = JSON.parse(`{{{json profile}}}`);
+</script>
+{{!-- title bar --}}
+<div class="input-group" style="background-color: var(--bs-primary)">
+	<h3 class="m-2" style="color: white">Chaos bot</h3>
+	<span class="input-group-btn">
+		<a target="_blank" rel="noreferrer noopener" href="https://discord.com/api/oauth2/authorize?client_id=886415887287066664&permissions=274948246592&scope=bot" role="button" class="btn m-2 btn-primary">Add to server</a>
+		{{#ifneq (json profile) "{}"}}
+		<a role="button" href="logout" class="btn btn-primary position-absolute top-0 end-0 m-2">Log-out</a>
+		<script>const loggedIn=true;</script>
+		{{else}}
+		<a role="button" href="login" class="btn btn-primary position-absolute top-0 end-0 m-2">Log-in</a>
+		<script>const loggedIn=false;</script>
+		{{/ifneq}}
+   </span>
+</div>
+{{!-- profile --}}
+{{#ifneq (json profile) "{}"}}
+<br>
+{{#with profile}}
+<div class="card m-2" style="background-color: var(--bs-dark);">
+	<div class="card-body">
+		<h4 class="card-title"><i>{{{username}}}#{{{discriminator}}}</i></h4>
+		<p class="card-text">You have registered {{count commands}} {{#ifeq (count commands) 1}}command{{else}}commands{{/ifeq}}</p>
+		<input type="button" class="btn btn-link position-absolute m-2 end-0" value="SHOW">
+		<input onclick="addcommand()" type="button" class="btn btn-primary" value="+ ADD">
+	</div>
+</div>
+{{/with}}
+{{/ifneq}}
+{{!-- commands --}}
