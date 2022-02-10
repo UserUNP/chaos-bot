@@ -8,11 +8,13 @@
   "author": "UserUNP",
   "license": "ISC",
   "dependencies": {
+    "crypto-js": "^4.1.1",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
     "express-handlebars": "^6.0.2",
     "express-session": "^1.17.2",
+    "pako": "^2.0.4",
     "passport": "^0.5.2",
     "passport-discord": "^0.1.4",
     "passport-oauth2-refresh": "^2.1.0"

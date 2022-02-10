@@ -33,13 +33,10 @@ function initOauth(app) {
 	app.get("/callback", passport.authenticate("discord", { failureRedirect: "/login" }), (req, res) => {res.redirect("/")});
 	app.get("/logout", (req, res) => {req.logout(); res.redirect("/")});
 }
-function isLoggedIn(req) {
-	if (req.isAuthenticated()) return true;
-	return false;
-}
+
 function oauth(req, res, next) {
-	if (isLoggedIn(req)) return next();
+	if (req.isAuthenticated()) return next();
 	res.redirect("/login");
 }
 
-module.exports = {isLoggedIn, oauth, initOauth};
+module.exports = {oauth, initOauth};
