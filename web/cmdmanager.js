@@ -38,11 +38,15 @@ function getCommand(commandName) {
 function getCommands(profile) {
 	const db = JSON.parse(ungzip(fs.readFileSync(`${__dirname}/../commands.gz`), { to: 'string' }));
 	if(!profile) return db;
-	if(typeof profile === "string") {if(db[profile]){return db[profile]}}
-	else {
-		const hash = sha256(`${profile.accessToken}@${profile.username}+${profile.email}`).toString();
-		if(db[hash]) return db[hash];
+
+	if(typeof profile === "string") {
+		if(!db[profile]) return [];
+		return db[profile];
 	}
+
+	const hash = sha256(`${profile.accessToken}@${profile.username}+${profile.email}`).toString();
+	if(db[hash]) return db[hash];
+	
 	return [];
 }
 

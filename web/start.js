@@ -150,6 +150,7 @@ app.post("/commands", (req, res) => {
 	}).then(({data})=>{
 		if(!data.username || !data.email) return res.status(400).json({error:"No idenitify or email scope", success:false});
 		if(getCommands(data).length >= 10) return res.status(400).json({error:"You have reached the max number of commands", success:false});
+		data.accessToken = req.body.access_token;
 		registerCommand(data, req.body.data);
 		console.log(`${data.username} registered command "${req.body.data.command}"  --  ${Date.now()}`);
 		res.json({success:true});
