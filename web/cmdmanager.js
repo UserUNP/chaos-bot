@@ -2,11 +2,22 @@ const { gzip, ungzip } = require('pako');
 const sha256 = require('crypto-js').SHA256;
 const fs = require('fs');
 
+const cmdpattern = /^[a-zA-Z0-9_\-~\$\!]+$/i;
+const actiontypes = new RegExp([
+	"message",
+	"dm",
+	"react",
+	"embed",
+	"edit",
+	"delete",
+].join("|"));
+
 function registerCommand(profile, commandData) {
 	const hash = sha256(`${profile.username}+${profile.email}`).toString();
-	if(getCommand(commandData.command)) return;
+	if(getCommand(commandData.command)) throw new Error(`Command "${commandData.command}" already exists`);
+	
+	commandData.by = {username:profile.username, discriminator:profile.discriminator};
 	const db = getCommands();
-
 	if(db[hash]) db[hash].push(commandData);
 	else db[hash] = [commandData];
 	
@@ -27,19 +38,12 @@ function getCommand(commandName) {
 function getCommands(profile) {
 	const db = JSON.parse(ungzip(fs.readFileSync(`${__dirname}/../commands.gz`), { to: 'string' }));
 	if(!profile) return db;
-	const hash = sha256(`${profile.username}+${profile.email}`).toString();
-	if(db[hash]) return db[hash];
+	else if(typeof profile === "string") if(db[profile]) return db[profile];
+	else {
+		const hash = sha256(`${profile.username}+${profile.email}`).toString();
+		if(db[hash]) return db[hash];
+	}
 	return [];
 }
 
-function countCommands() {
-	const db = getCommands()
-	let count = 0;
-	Object.keys(db).forEach(hash => {
-		count += db[hash].length;
-	});
-	return count;
-}
-
-console.log(getCommand("test"))
-module.exports = {registerCommand, getCommand, getCommands};
+module.exports = {registerCommand, getCommand, getCommands, actiontypes};

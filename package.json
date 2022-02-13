@@ -8,6 +8,8 @@
   "author": "UserUNP",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.25.0",
+    "compression": "^1.7.4",
     "crypto-js": "^4.1.1",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0",
@@ -18,5 +20,9 @@
     "passport": "^0.5.2",
     "passport-discord": "^0.1.4",
     "passport-oauth2-refresh": "^2.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UserUNP/chaos-bot"
   }
 }

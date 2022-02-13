@@ -1,33 +1,122 @@
-{{!-- parse profile --}}
-<script>
-	const profile = JSON.parse(`{{{json profile}}}`);
-</script>
 {{!-- title bar --}}
-<div class="input-group" style="background-color: var(--bs-primary)">
-	<h3 class="m-2" style="color: white">Chaos bot</h3>
-	<span class="input-group-btn">
-		<a target="_blank" rel="noreferrer noopener" href="https://discord.com/api/oauth2/authorize?client_id=886415887287066664&permissions=274948246592&scope=bot" role="button" class="btn m-2 btn-primary">Add to server</a>
+<nav class="navbar navbar-expand-lg p-0 navbar-dark bg-primary"><div class="container-fluid">
+	<span class="navbar-brand mb-0 h1">Chaos bot</span>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+    </button>
+	<div class="collapse navbar-collapse" id="navbarNav">
 		{{#ifneq (json profile) "{}"}}
-		<a role="button" href="logout" class="btn btn-primary position-absolute top-0 end-0 m-2">Log-out</a>
+		<a role="button" href="logout" class="btn btn-primary">Log-out</a>
 		<script>const loggedIn=true;</script>
 		{{else}}
-		<a role="button" href="login" class="btn btn-primary position-absolute top-0 end-0 m-2">Log-in</a>
+		<a role="button" href="login" class="btn btn-primary">Log-in</a>
 		<script>const loggedIn=false;</script>
 		{{/ifneq}}
-   </span>
-</div>
+		<a target="_blank" rel="noreferrer noopener" href="https://discord.com/api/oauth2/authorize?client_id=886415887287066664&permissions=274948246592&scope=bot" role="button" class="ms-auto btn m-2 btn-primary">Add to server</a>
+	</div>
+</div></nav>
+
 {{!-- profile --}}
 {{#ifneq (json profile) "{}"}}
-<br>
 {{#with profile}}
-<div class="card m-2" style="background-color: var(--bs-dark);">
-	<div class="card-body">
-		<h4 class="card-title"><i>{{{username}}}#{{{discriminator}}}</i></h4>
-		<p class="card-text">You have registered {{count commands}} {{#ifeq (count commands) 1}}command{{else}}commands{{/ifeq}}</p>
-		<input type="button" class="btn btn-link position-absolute m-2 end-0" value="SHOW">
-		<input onclick="addcommand()" type="button" class="btn btn-primary" value="+ ADD">
+<br>
+<script>
+	function addcommand(cmdname, [actiontypes, actionctxs]) {
+		if(!/^[a-zA-Z0-9_\-~\$\!]+$/i.test(cmdname)) {
+			document.getElementById("cmdnamae").classList.add("is-invalid");
+		}
+		document.getElementById("addcmdModalBtn").disabled = true;
+		document.getElementById("addcmdModalBtn").innerText = "Registering...";
+		const cmdactions = [];
+		for (var i = 0; i < actiontypes.length; i++) {
+			let action = {};
+			action.type = actiontypes[i];
+			action.context = actionctxs[i];
+			cmdactions.push(action);
+		}
+		console.log(cmdactions)
+		fetch(`${window.location.origin}/commands`, {
+			method: "POST", 
+			body: JSON.stringify({
+				access_token: "{{{accessToken}}}",
+				data: {
+					command: `${cmdname}`,
+					actions: cmdactions
+				}
+			}),
+			headers: {
+				"Content-Type": "application/json"
+			}
+		}).then(res => {
+			document.getElementById("addcmdModalBtn").innerText = "Checking...";
+			if(!res.ok) return res.body.getReader().read().then(data => console.error(res.status, res.statusText, JSON.parse(new TextDecoder().decode(data.value)).error));
+			document.getElementById("addcmdModalBtn").innerText = "Done!";
+			window.location = window.location.origin;
+		});
+	}
+</script>
+<div class="card m-2">
+	<div class="card-body rounded">
+		<h4 class="card-title"><i><span>{{{username}}}</span><kdb class="text-muted rounded">#{{{discriminator}}}</kdb></i></h4>
+		<p class="card-text">You have registered {{count commands}} {{#ifeq (count commands) 1}}command{{else}}commands{{/ifeq}} {{#ifneq (count commands) 0}}<button type="button" data-bs-toggle="collapse" data-bs-target="#commandsByUser" aria-expanded="false" aria-controls="commandsByUser" class="btn btn-link position-absolute end-0" style="box-shadow: none !important">SHOW</button>{{/ifneq}}</p>
+		<div class="collapse" id="commandsByUser">
+			<br>
+			<div class="card card-body border border-primary rounded" style="background-color:var(--bs-gray-dark) !important;">
+				{{#each commands}}
+				<div class="row">
+					<div class="col"><kbd><span style="color:var(--bs-info); font-size:medium;">{{{@root.botprefix}}}</span> <strong>{{{this.command}}}</strong></kbd></div>
+					<div class="col"><span style="color:var(--bs-info) !important; font-size:medium;">{{{count this.actions}}}</span> {{#ifeq (count this.actions) 1}}ACTION{{else}}ACTIONS{{/ifeq}}</div>
+					<div class="col"><button type="button" class="btn btn-primary py-0 px-2 m-0">EDIT</button></div>
+				</div>
+				{{/each}}
+			</div>
+			<br>
+		</div>
+		<button {{#ifeq (count commands) 10}}disabled{{/ifeq}} type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCommandModal">+ ADD <span class="badge">{{#ifneq (count commands) 10}}{{#ifeq (count commands) 2}}{{calc 10 "-" (count commands)}} slots left{{/ifeq}}{{else}}LIMIT REACHED{{/ifneq}}</span></button>
 	</div>
 </div>
 {{/with}}
+<div class="modal fade" id="addCommandModal" tabindex="-1" aria-labelledby="addCommandModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content" style="color: black !important;">
+			<div class="modal-header rounded" style="background-color:var(--bs-gray-300) !important;">
+				<h5 class="modal-title" id="exampleModalLabel">Add command</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body border-top" style="">
+				<div class="input-group mb-3">
+					<span style="background-color:var(--bs-dark)" class="input-group-text" id="botprefix"><kbd style="font-size:medium">{{{botprefix}}}</kbd></span>
+					<input id="cmdnamae" pattern="[a-zA-Z0-9_\-~\$\!]+" type="text" class="form-control" placeholder="command name" aria-label="Command name" aria-describedby="botprefix">
+				</div>
+				<!-- <hr><i class="bi bi-plus-square-dotted"></i> later. -->
+				<div class="input-group mb-3">
+					<kbd><select id="cmdaction" style="font-size:medium;background-color:var(--bs-dark);color:white;border:none;box-shadow: none !important;" class="input-group-text form-select form-select-sm" aria-label=".form-select-sm example">
+							<option selected>SELECT</option>
+							<option value="message">Reply</option>
+							<option value="dm">Direct Message</option>
+							<option value="react">Reaction</option>
+					</select></kbd>
+					<input id="cmdactionctx" type="text" class="form-control" placeholder="context" aria-label="Command name" aria-describedby="cmdaction">
+				</div>
+			</div>
+			<div class="modal-footer" style="background-color:var(--bs-gray-300) !important;">
+				<button id="addcmdModalBtn" style="box-shadow: none !important" type="button" class="btn btn-dark" onclick='addcommand(document.getElementById("cmdnamae").value, [[document.getElementById("cmdaction").value], [document.getElementById("cmdactionctx").value]]);'>Add</button>
+			</div>
+		</div>
+	</div>
+</div>
 {{/ifneq}}
+<br>
 {{!-- commands --}}
+<div class="card m-2">
+	<div class="card-body border rounded" style="border-width:2px !important; border-color: black !important;">
+		<h4 class="card-title">{{{countcmds commands}}} Registered {{#ifeq (countcmds commands) 1}} command{{else}} commands{{/ifeq}}</h4>
+		<div class="collapse show" id="registeredCommands">
+			<br>
+			<div class="card card-body border border-primary rounded" style="background-color:var(--bs-gray-dark) !important;">
+				{{{listcmds commands}}}
+			</div>
+			<br>
+		</div>
+	</div>
+</div>
