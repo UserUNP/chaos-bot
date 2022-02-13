@@ -2,7 +2,7 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const compression = require('compression')
-const session = require('express-session')
+const session = require('cookie-session')
 const { get } = require("axios").default;
 const { initOauth, oauth } = require('./login');
 const { engine } = require('express-handlebars');
