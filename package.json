@@ -7,6 +7,9 @@
   "keywords": [],
   "author": "UserUNP",
   "license": "ISC",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "axios": "^0.25.0",
     "compression": "^1.7.4",

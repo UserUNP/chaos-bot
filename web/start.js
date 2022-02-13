@@ -157,7 +157,7 @@ app.post("/commands", (req, res) => {
 });
 
 function startServer() {
-	app.listen(3500, () => {
+	app.listen(process.env.PORT || 3500, () => {
 		console.log("Started web listening on port 3500");
 	});
 }
