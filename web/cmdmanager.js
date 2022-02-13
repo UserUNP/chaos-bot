@@ -13,7 +13,7 @@ const actiontypes = new RegExp([
 ].join("|"));
 
 function registerCommand(profile, commandData) {
-	const hash = sha256(`${profile.username}+${profile.email}`).toString();
+	const hash = sha256(`${profile.accessToken}@${profile.username}+${profile.email}`).toString();
 	if(getCommand(commandData.command)) throw new Error(`Command "${commandData.command}" already exists`);
 	
 	commandData.by = {username:profile.username, discriminator:profile.discriminator};
@@ -38,12 +38,12 @@ function getCommand(commandName) {
 function getCommands(profile) {
 	const db = JSON.parse(ungzip(fs.readFileSync(`${__dirname}/../commands.gz`), { to: 'string' }));
 	if(!profile) return db;
-	else if(typeof profile === "string") if(db[profile]) return db[profile];
+	if(typeof profile === "string") {if(db[profile]){return db[profile]}}
 	else {
-		const hash = sha256(`${profile.username}+${profile.email}`).toString();
+		const hash = sha256(`${profile.accessToken}@${profile.username}+${profile.email}`).toString();
 		if(db[hash]) return db[hash];
 	}
 	return [];
 }
 
-module.exports = {registerCommand, getCommand, getCommands, actiontypes};
+module.exports = {registerCommand, getCommand, getCommands, actiontypes, cmdpattern};

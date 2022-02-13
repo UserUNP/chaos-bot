@@ -140,7 +140,7 @@ app.get("/users/:hash?", (req, res) => {
 app.post("/commands", (req, res) => {
 	if(!req.body.access_token) return res.status(401).json({error:"An access_token is required", success:false});
 	else if(!req.body.data) return res.status(400).json({error:"No command data provided", success:false});
-	else if(!req.body.data.command.trim().match(cmdpattern)) return res.status(400).json({error:"Invalid command characters", success:false});
+	else if(!cmdpattern.test(req.body.data.command.trim())) return res.status(400).json({error:"Invalid command characters", success:false});
 	else if(!req.body.data.actions) return res.status(400).json({error:"No actions provided"});
 	else if(!req.body.data.actions.every(action => action.context.trim() && action.type.trim() && actiontypes.test(action.type.trim()))) return res.status(400).json({error:"Malformed command actions", success:false});
 	get("https://discordapp.com/api/users/@me", {

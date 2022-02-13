@@ -1,6 +1,6 @@
 {{!-- title bar --}}
 <nav class="navbar navbar-expand-lg p-0 navbar-dark bg-primary"><div class="container-fluid">
-	<span class="navbar-brand mb-0 h1">Chaos bot</span>
+	<span class="navbar-brand mb-0 h1">Bluestone-bot</span>
 	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
     </button>
@@ -111,12 +111,18 @@
 <div class="card m-2">
 	<div class="card-body border rounded" style="border-width:2px !important; border-color: black !important;">
 		<h4 class="card-title">{{{countcmds commands}}} Registered {{#ifeq (countcmds commands) 1}} command{{else}} commands{{/ifeq}}</h4>
-		<div class="collapse show" id="registeredCommands">
+		<div class="collapse {{#ifneq (countcmds commands) 0}}show{{/ifneq}}" id="registeredCommands">
 			<br>
 			<div class="card card-body border border-primary rounded" style="background-color:var(--bs-gray-dark) !important;">
 				{{{listcmds commands}}}
 			</div>
 			<br>
 		</div>
+		{{#ifeq (countcmds commands) 0}}
+			{{!-- funny http.cat image here --}}
+			<div class="card-body border border-primary rounded" style="background-color:black !important;">
+				<center><img draggable="false" src="https://http.cat/204.jpg" alt="404" style="width:30%;"></center>
+			</div>
+		{{/ifeq}}
 	</div>
 </div>
