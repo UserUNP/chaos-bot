@@ -2,7 +2,7 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const compression = require('compression')
-const session = require('express-session')
+const session = require('cookie-session')
 const { get } = require("axios").default;
 const { initOauth, oauth } = require('./login');
 const { engine } = require('express-handlebars');
@@ -152,14 +152,14 @@ app.post("/commands", (req, res) => {
 		if(getCommands(data).length >= 10) return res.status(400).json({error:"You have reached the max number of commands", success:false});
 		data.accessToken = req.body.access_token;
 		registerCommand(data, req.body.data);
-		console.log(`${data.username} registered command "${req.body.data.command}"  --  ${Date.now()}`);
 		res.json({success:true});
+		console.log(`${data.username} registered command "${req.body.data.command}"  --  ${Date.now()}`);
 	}).catch(err=>res.status(err.response ? err.response.status : 400).json({error:err.message, success:false}));
 });
 
 function startServer() {
-	app.listen(process.env.PORT || 3500, () => {
-		console.log("Started web listening on port 3500");
+	app.listen(process.env.PORT, () => {
+		console.log(`Started web listening on port ${process.env.PORT}`);
 	});
 }
 
