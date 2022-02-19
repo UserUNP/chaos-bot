@@ -1,3 +1,4 @@
 .env
 commands.gz
 node_modules/
+tests.http

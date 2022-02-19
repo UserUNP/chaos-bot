@@ -1,0 +1,33 @@
+POST http://localhost:3500/commands/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "access_token": "VB0TiZllp8zjHcut6FTV5cV5UacmaQ",
+  "data": {
+	"command": "ping",
+	"actions": [
+		{"type":"react","context":"✅👌"},
+		{"type":"message","context":"pong"}
+	]
+  }
+
+}
+
+################################################################################
+
+POST http://localhost:3500/commands/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "access_token": "VB0TiZllp8zjHcut6FTV5cV5UacmaQ",
+  "data": {
+	"command": "~",
+	"actions": [
+		{"type":"message","context":"test 123"},
+		{"type":"react","context":"👌"},
+		{"type":"delay","context":"10000"},
+		{"type":"message","context":"delayed execution"}
+	]
+  }
+
+}

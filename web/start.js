@@ -6,7 +6,7 @@ const session = require('cookie-session')
 const { get } = require("axios").default;
 const { initOauth, oauth } = require('./login');
 const { engine } = require('express-handlebars');
-const { getCommands, registerCommand, getCommand, actiontypes, cmdpattern } = require('./cmdmanager');
+const { getCommands, registerCommand, getCommand, actiontypes, cmdpattern } = require('./manager');
 
 const app = express();
 app.use(compression());
@@ -113,9 +113,11 @@ app.get("/commands/:command?", (req, res) => {
 			}
 			res.json(ret);
 		} else {
-			const command = getCommand(req.params.command);
-			if(!command) return res.status(404).json({error:"Command not found", success:false});
-			res.json(command);
+			getCommand(req.params.command).then(c => {
+				res.json(c);
+			}).catch(e => {
+				res.status(404).json({error:e, success:false});
+			});
 		}
 	} catch(err) {
 		console.error(err);
@@ -138,7 +140,8 @@ app.get("/users/:hash?", (req, res) => {
 
 });
 app.post("/commands", (req, res) => {
-	if(!req.body.access_token) return res.status(401).json({error:"An access_token is required", success:false});
+	if(!req.body) return res.status(401).json({error:"An access_token is required", success:false});
+	else if(!req.body.access_token) return res.status(401).json({error:"An access_token is required", success:false});
 	else if(!req.body.data) return res.status(400).json({error:"No command data provided", success:false});
 	else if(!cmdpattern.test(req.body.data.command.trim())) return res.status(400).json({error:"Invalid command characters", success:false});
 	else if(!req.body.data.actions) return res.status(400).json({error:"No actions provided"});
@@ -151,9 +154,10 @@ app.post("/commands", (req, res) => {
 		if(!data.username || !data.email) return res.status(400).json({error:"No idenitify or email scope", success:false});
 		if(getCommands(data).length >= 10) return res.status(400).json({error:"You have reached the max number of commands", success:false});
 		data.accessToken = req.body.access_token;
-		registerCommand(data, req.body.data);
-		res.json({success:true});
-		console.log(`${data.username} registered command "${req.body.data.command}"  --  ${Date.now()}`);
+		registerCommand(data, req.body.data).then(()=>{
+			console.log(`${data.username} registered command "${req.body.data.command}"  --  ${Date.now()}`);
+			res.json({success:true});
+		}).catch(err=>res.status(400).json({error:err.message||err, success:false}));
 	}).catch(err=>res.status(err.response ? err.response.status : 400).json({error:err.message, success:false}));
 });
 
