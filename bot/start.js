@@ -15,7 +15,7 @@ client.on("messageCreate", async (message) => {
 	if(message.author.bot) return;
 	const cmdname = (message.content.match(new RegExp(`^${process.env.PREFIX}([a-zA-Z0-9_\-~\$\!]*)`))??"")[1];
 	if(!cmdname) return;
-	const cmddata = await getCommand(cmdname).catch(()=>{});
+	const cmddata = await getCommand(cmdname).catch(e => {message.reply(`\`\`\`${e?.message || (e??"`Unknocn error occured.`") }\`\`\``);return;});
 	if(!cmddata) return;
 	const command = Command.parse(cmddata);
 	// new Action("message", `\`\`\`json\n${JSON.stringify(command,null,4)}\`\`\``).exec(message);

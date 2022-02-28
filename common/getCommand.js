@@ -1,16 +1,15 @@
 const getCommands = require("./getCommands");
 
-async function getCommand(commandName) {
+async function getCommand(nameOrId) {
 	return new Promise((resolve, reject) => {
-		const db = getCommands()
-		let cmd;
-		Object.keys(db).forEach(hash => {
-			db[hash].forEach(command => {
-				if(command.command === commandName) cmd=command;
-			});
-		});
-		if(!cmd) return reject("Command not found");
-		else resolve(cmd);
+		getCommands().then(commands => {
+			let res;
+			if(typeof nameOrId === "string") res = commands.find(c => c.name === nameOrId);
+			else res = commands.find(c => c.id === nameOrId);
+			
+			if(!res) return reject("Command not found");
+			else resolve(res);
+		}).catch(err => reject(err));
 	});
 }
 

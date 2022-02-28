@@ -24,7 +24,7 @@
     "erlpack": "github:discord/erlpack",
     "express": "^4.17.2",
     "express-handlebars": "^6.0.2",
-    "pako": "^2.0.4",
+    "mysql": "^2.18.1",
     "passport": "^0.5.2",
     "passport-discord": "^0.1.4",
     "passport-oauth2-refresh": "^2.1.0",

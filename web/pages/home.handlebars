@@ -34,7 +34,6 @@
 			action.context = actionctxs[i];
 			cmdactions.push(action);
 		}
-		console.log(cmdactions)
 		fetch(`${window.location.origin}/commands`, {
 			method: "POST", 
 			body: JSON.stringify({
@@ -64,7 +63,7 @@
 			<div class="card card-body border border-primary rounded" style="background-color:var(--bs-gray-dark) !important;">
 				{{#each commands}}
 				<div class="row">
-					<div class="col"><kbd><span style="color:var(--bs-info); font-size:medium;">{{{@root.botprefix}}}</span> <strong>{{{this.command}}}</strong></kbd></div>
+					<div class="col"><kbd><span style="color:var(--bs-info); font-size:medium;">{{{@root.botprefix}}}</span> <strong>{{{this.name}}}</strong></kbd></div>
 					<div class="col"><span style="color:var(--bs-info) !important; font-size:medium;">{{{count this.actions}}}</span> {{#ifeq (count this.actions) 1}}ACTION{{else}}ACTIONS{{/ifeq}}</div>
 					<div class="col"><button type="button" class="btn btn-primary py-0 px-2 m-0">EDIT</button></div>
 				</div>

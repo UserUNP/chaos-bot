@@ -1,27 +1,31 @@
 const Action = require("./Action");
-const Parameter = require("./Parameter");
+const Argument = require("./Argument");
 const { MessageAttachment } = require("discord.js");
 
 class Command {
-	constructor(name, actions, parameters) {
-		this.command = name;
+	constructor(name, actions, args) {
+		this.name = name;
 		this.actions = actions;
-		//! this.params = parameters;
+		//! this.args = args;
 	}
 
-	getObjectData() {
+	get objectData() {
 		return {...this};
+	}
+
+	get owner() {
+		
 	}
 
 	async exec(origin) {
 		return new Promise((resolve, reject) => {
 			var actIndex = 0;
 			if(this.actions.length === 0) return reject({content:"...what??", files:[new MessageAttachment("damn.png")]});
-			console.log(`[${origin.author.username+"#"+origin.author.discriminator}: <COMMAND ${this.command}>] Executing command "${this.command}"`);
+			console.log(`[${origin.author.username+"#"+origin.author.discriminator}: <COMMAND ${this.name}>] Executing command "${this.name}"`);
 			this.actions.forEach(action => {
 				actIndex++;
-				try {action.exec(origin);console.log(`     <ACTION ${action.type.toLowerCase()}> action  \u001b[1;32mpassed ✓\u001b[0m`,action.getObjectData());}
-				catch(e) {origin.reply(`${actIndex}${(actIndex==1)?"st":(actIndex==2)?"nd":(actIndex==3)?"rd":"th"} action failed. ${e}`);console.log(`     <ACTION ${action.type.toLowerCase()}> action \u001b[1;31mfailed ✖\u001b[0m`,action.getObjectData());}				
+				try {action.exec(origin);console.log(`     <ACTION ${action.type.toLowerCase()}> action  \u001b[1;32mpassed ✓\u001b[0m`);}
+				catch(e) {origin.reply(`_\`${actIndex}${(actIndex==1)?"st":(actIndex==2)?"nd":(actIndex==3)?"rd":"th"} action failed.\`_ ${e}`);console.log(`     <ACTION ${action.type.toLowerCase()}> action \u001b[1;31mfailed ✖\u001b[0m`);}				
 			});
 			resolve();
 		});
@@ -29,9 +33,9 @@ class Command {
 
 	static parse(data) {
 		return new Command(
-			data.command,
+			data.name,
 			data.actions.map(action => new Action(action.type, action.context)),
-			//! data.params.map(param => Parameter(...))
+			//! data.args.map(param => Argument(...))
 			);
 	}
 }

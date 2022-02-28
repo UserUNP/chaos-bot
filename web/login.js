@@ -16,7 +16,7 @@ const strat = new Strategy({
 	callbackURL: process.env.CALLBACK,
 	scope: JSON.parse(process.env.SCOPES),
 	prompt: "consent"
-}, function(accessToken, refreshToken, user, cb) {
+}, function(_accessToken, refreshToken, user, cb) {
 	user.refreshToken = refreshToken;
 	process.nextTick(() => {
 		return cb(null, user);
@@ -29,8 +29,8 @@ refresh.use(strat);
 function initOauth(app) {
 	app.use(passport.initialize());
 	app.use(passport.session());
-	app.get("/login", passport.authenticate("discord", { scope: JSON.parse(process.env.SCOPES), prompt: "consent" }), (req, res) => {});
-	app.get("/callback", passport.authenticate("discord", { failureRedirect: "/login" }), (req, res) => {res.redirect("/")});
+	app.get("/login", passport.authenticate("discord", { scope: JSON.parse(process.env.SCOPES), prompt: "consent" }), (_req, _res) => {});
+	app.get("/callback", passport.authenticate("discord", { failureRedirect: "/login" }), (_req, res) => {res.redirect("/")});
 	app.get("/logout", (req, res) => {req.logout(); res.redirect("/")});
 }
 

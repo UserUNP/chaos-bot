@@ -1,4 +1,4 @@
-const Parameter = require("./Parameter");
+const Argument = require("./Argument");
 
 class Action {
 	constructor(type, context) {
@@ -7,7 +7,7 @@ class Action {
 		//! this.params = params;
 	}
 
-	getObjectData() {
+	get objectData() {
 		return {...this};
 	}
 
@@ -25,8 +25,7 @@ class Action {
 					break;
 				case "delay":
 					if(!parseInt(this.context)) throw "Delay value must be a number";
-					// TODO
-					break;
+					break; // TODO
 				case "embed":
 					break; // TODO
 				case "edit":
@@ -34,10 +33,10 @@ class Action {
 				case "delete":
 					break; // TODO
 				default:
-					break;
+					throw "You've cought an ultra-rare error.\nThe bug has been tracked, traced and reported to the developers.";
 			}
 		} catch(e) {
-			throw `\`\`\`${e?.message || (e??"`Unknocn error occured.`") }\`\`\``;
+			throw `\`\`\`${e?.message || (e??"`Unknown error occured.`") }\`\`\``;
 		}
 	}
 }
